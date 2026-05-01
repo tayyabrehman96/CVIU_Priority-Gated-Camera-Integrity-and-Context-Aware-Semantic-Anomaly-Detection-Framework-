@@ -1,6 +1,6 @@
 # Priority-Gated Camera Integrity and Context-Aware Semantic Anomaly Detection
 
-Research code release for **hybrid risk simulation**, **frame-level anomaly benchmarks**, and **figure reproduction** accompanying work submitted to *Computer Vision and Image Understanding* (CVIU). This repository is a **slim, reproducibility-focused** snapshot: the full offline demo GUI, VLM service layer, and live-engine orchestration are **not** included here.
+Research code release for **hybrid risk simulation**, **frame-level anomaly benchmarks**, and evaluation utilities accompanying work submitted to *Computer Vision and Image Understanding* (CVIU). This repository is a **slim, reproducibility-focused** snapshot: the full offline demo GUI, VLM service layer, and live-engine orchestration are **not** included here.
 
 **Public repository:** [github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-](https://github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-)
 
@@ -131,12 +131,10 @@ Committed **CSV** exports under [`reports/`](reports/) (`risk_matrix_*.csv`, `de
 
 Use `--no-models` on `run_experiment_matrix.py` / `test_pipeline.py` if you want to skip YOLO loading.
 
-**6. Optional analysis / figures**
+**6. Optional analysis**
 
 ```bash
 python eval_resample_imbalance.py --help
-python generate_sota_figures.py
-python generate_methodology_diagram.py
 ```
 
 ## Repository layout
@@ -152,11 +150,11 @@ python generate_methodology_diagram.py
 ├── aggregate_experiment_matrix.py
 ├── test_pipeline.py               # Benchmark driver
 ├── eval_resample_imbalance.py
-├── generate_*.py                  # Test videos & publication figures
+├── generate_test_videos.py       # Synthetic TEST_* clips for benchmarks
 ├── dataset_preparation.ipynb
 ├── download_test_videos.ipynb
 ├── docs/                          # methodology_diagram.png + docs/README.md
-├── Images/                        # Placeholder only — PNGs gitignored; run generate_*.py or add files locally
+├── Images/                        # Local extras gitignored; methodology figure lives under docs/
 ├── reports/                       # *.csv experiment outputs (tracked)
 ├── models/README.md
 ├── videos/README.md
