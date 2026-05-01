@@ -20,6 +20,12 @@ videos/*.mkv
 videos/*.mov
 simulations/
 
+# Figures (regenerate with generate_*.py); PNG/JPEG not committed
+Images/*
+!Images/README.md
+!Images/.gitkeep
+/fig9_sota_*.png
+
 # Experiment outputs: CSV results are tracked; other files under reports/ stay untracked
 reports/*
 !reports/.gitkeep

@@ -98,8 +98,8 @@ python generate_methodology_diagram.py
 ├── generate_*.py                  # Test videos & publication figures
 ├── dataset_preparation.ipynb
 ├── download_test_videos.ipynb
-├── cas-dc-template.tex / cas-refs.bib  # Manuscript sources (local figure paths)
-├── Images/                        # Diagram outputs (if generated)
+├── cas-dc-template.tex / cas-refs.bib  # Manuscript sources (expects figures locally; see Images/README.md)
+├── Images/                        # Placeholder only — PNGs gitignored; run generate_*.py or add files locally
 ├── reports/                       # *.csv experiment outputs (tracked)
 ├── models/README.md
 ├── videos/README.md
