@@ -66,7 +66,7 @@ python hybrid_risk_simulation.py --mode hybrid --severity high --seed 37 --metad
 python run_experiment_matrix.py --sample-frames 5 --out-dir reports
 ```
 
-Matrix CSV and log outputs are written under `reports/` locally; that folder is **gitignored** except a `.gitkeep` so the path exists after clone.
+Committed **CSV** exports under [`reports/`](reports/) (`risk_matrix_*.csv`, `detections_*.csv`, `frame_log_*.csv`, `video_summary_*.csv`, etc.) record dataset-derived experiment outputs. Regenerating runs still writes new files alongside them; large scratch `.txt` logs remain untracked.
 
 Use `--no-models` on `run_experiment_matrix.py` / `test_pipeline.py` if you want to skip YOLO loading.
 
@@ -96,6 +96,7 @@ python generate_methodology_diagram.py
 ├── download_test_videos.ipynb
 ├── cas-dc-template.tex / cas-refs.bib  # Manuscript sources (local figure paths)
 ├── Images/                        # Diagram outputs (if generated)
+├── reports/                       # *.csv experiment outputs (tracked)
 ├── models/README.md
 ├── videos/README.md
 ├── requirements.txt

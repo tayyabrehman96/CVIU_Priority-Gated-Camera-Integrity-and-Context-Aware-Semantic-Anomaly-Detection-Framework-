@@ -1,0 +1,62 @@
+Video #,Video Name,Total Frames,Processed Frames,Normal Frames,Anomaly Frames,Calibration Frames,Corrupted Frames,Normal %,Anomaly %,Anomaly Types
+1,Normal_Videos_015_x264,480,160,130,0,30,0,81.2,0,None
+2,Normal_Videos_050_x264,4198,1399,1369,0,30,0,97.9,0,None
+3,Normal_Videos_100_x264,627,209,178,1,30,0,85.2,0.5,Pending_VLM=1
+4,Normal_Videos_129_x264,467,155,125,0,30,0,80.6,0,None
+5,Normal_Videos_150_x264,864,288,258,0,30,0,89.6,0,None
+6,Normal_Videos_246_x264,4993,1664,1633,1,30,0,98.1,0.1,Pending_VLM=1
+7,Normal_Videos_247_x264,8211,2737,2705,2,30,0,98.8,0.1,Pending_VLM=2
+8,Normal_Videos_248_x264,1140,380,349,1,30,0,91.8,0.3,Pending_VLM=1
+9,Normal_Videos_251_x264,405,135,104,1,30,0,77,0.7,Pending_VLM=1
+10,Normal_Videos_289_x264,863,287,257,0,30,0,89.5,0,None
+11,Normal_Videos_310_x264,2518,839,809,0,30,0,96.4,0,None
+12,Normal_Videos_312_x264,1261,420,390,0,30,0,92.9,0,None
+13,Normal_Videos_317_x264,929,309,278,1,30,0,90,0.3,Pending_VLM=1
+14,Normal_Videos_345_x264,209,69,39,0,30,0,56.5,0,None
+15,Normal_Videos_352_x264,5403,1801,1770,1,30,0,98.3,0.1,Pending_VLM=1
+16,Normal_Videos_360_x264,984,328,296,2,30,0,90.2,0.6,Pending_VLM=2
+17,Normal_Videos_365_x264,6626,2208,2177,1,30,0,98.6,0,Pending_VLM=1
+18,Normal_Videos_401_x264,1626,542,512,0,30,0,94.5,0,None
+19,Normal_Videos_417_x264,1077,359,329,0,30,0,91.6,0,None
+20,Normal_Videos_439_x264,4226,1408,1378,0,30,0,97.9,0,None
+21,Normal_Videos_452_x264,443,147,117,0,30,0,79.6,0,None
+22,Normal_Videos_453_x264,5322,1774,1743,1,30,0,98.3,0.1,Pending_VLM=1
+23,Normal_Videos_478_x264,4502,1500,1470,0,30,0,98,0,None
+24,Normal_Videos_576_x264,11275,3758,3726,2,30,0,99.1,0.1,Pending_VLM=2
+25,Normal_Videos_597_x264,2229,743,713,0,30,0,96,0,None
+26,Normal_Videos_603_x264,3277,1092,1061,1,30,0,97.2,0.1,Pending_VLM=1
+27,Normal_Videos_606_x264,1233,411,381,0,30,0,92.7,0,None
+28,Normal_Videos_621_x264,4802,1600,1569,1,30,0,98.1,0.1,Pending_VLM=1
+29,Normal_Videos_634_x264,13459,4486,4455,1,30,0,99.3,0,Pending_VLM=1
+30,Normal_Videos_641_x264,3600,1200,1169,1,30,0,97.4,0.1,Pending_VLM=1
+31,Normal_Videos_656_x264,1815,605,575,0,30,0,95,0,None
+32,Normal_Videos_696_x264,3625,1208,1177,1,30,0,97.4,0.1,Pending_VLM=1
+33,Normal_Videos_704_x264,1694,564,532,1,30,1,94.3,0.2,Pending_VLM=1
+34,Normal_Videos_722_x264,8731,2910,2879,1,30,0,98.9,0,Pending_VLM=1
+35,Normal_Videos_745_x264,305,101,70,1,30,0,69.3,1,Pending_VLM=1
+36,Normal_Videos_758_x264,1589,529,499,0,30,0,94.3,0,None
+37,Normal_Videos_781_x264,3975,1325,1294,1,30,0,97.7,0.1,Pending_VLM=1
+38,Normal_Videos_798_x264,6001,2000,1969,1,30,0,98.5,0.1,Pending_VLM=1
+39,Normal_Videos_801_x264,2744,914,884,0,30,0,96.7,0,None
+40,Normal_Videos_828_x264,930,310,279,1,30,0,90,0.3,Pending_VLM=1
+41,Normal_Videos_831_x264,448,149,118,1,30,0,79.2,0.7,Pending_VLM=1
+42,Normal_Videos_877_x264,10025,3341,3310,1,30,0,99.1,0,Pending_VLM=1
+43,Normal_Videos_881_x264,224,74,33,0,31,10,44.6,0,None
+44,Normal_Videos_885_x264,474,158,128,0,30,0,81,0,None
+45,Normal_Videos_892_x264,1770,590,559,1,30,0,94.7,0.2,Pending_VLM=1
+46,Normal_Videos_905_x264,1196,398,367,1,30,0,92.2,0.3,Pending_VLM=1
+47,Normal_Videos_912_x264,746,248,217,1,30,0,87.5,0.4,Pending_VLM=1
+48,Normal_Videos_913_x264,609,203,172,1,30,0,84.7,0.5,Pending_VLM=1
+49,Normal_Videos_914_x264,880,293,262,1,30,0,89.4,0.3,Pending_VLM=1
+50,Normal_Videos_929_x264,924,308,278,0,30,0,90.3,0,None
+51,TEST_blocked_black_tape,1350,450,270,2,30,148,60,0.4,camera_blocked=2
+52,TEST_blocked_brown_cardboard,1350,450,243,177,30,0,54,39.3,Pending_VLM=1; camera_blocked=176
+53,TEST_blocked_hand,1350,450,247,173,30,0,54.9,38.4,Pending_VLM=1; camera_blocked=172
+54,TEST_blur_defocus,1350,449,354,65,30,0,78.8,14.5,Pending_VLM=1; blur_frame=64
+55,TEST_camera_moved,1350,450,419,1,30,0,93.1,0.2,Pending_VLM=1
+56,TEST_fire_smoke,1350,450,419,1,30,0,93.1,0.2,Pending_VLM=1
+57,TEST_normal_reference,1350,450,420,0,30,0,93.3,0,None
+58,TEST_weapon_theft,1350,450,419,1,30,0,93.1,0.2,Pending_VLM=1
+59,horses,265,132,102,0,30,0,77.3,0,None
+,,,,,,,,,,
+TOTALS,59 videos,,52367,49985,452,1771,159,95.5,0.9,
