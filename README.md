@@ -4,6 +4,16 @@ Research code release for **hybrid risk simulation**, **frame-level anomaly benc
 
 **Public repository:** [github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-](https://github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-)
 
+## Authors
+
+**Tayyab Rehman**<sup>a,\*</sup>, **Giovanni De Gasperis**<sup>a,b</sup>, **Aly Shmahell**<sup>a,b,\*</sup>
+
+<sup>a</sup> Department of Engineering, Computer Science and Mathematics (DISIM), University of L’Aquila, L’Aquila, 67100, Italy  
+
+<sup>b</sup> SPEE S.R.L, L’Aquila, Italy  
+
+<sup>\*</sup> Corresponding authors (as in the CVIU manuscript).
+
 ## What the full system does in practice (industry / deployment)
 
 In the **intended real-world** design (CVIU manuscript), the pipeline processes surveillance video so that **camera health is validated before any “what is happening in the scene?” interpretation**. Concretely:
@@ -361,7 +371,7 @@ If you use this code, please cite the **CVIU manuscript** once it is available, 
 
 ```bibtex
 @software{rehman2026cviu_priority_gated_code,
-  author       = {Rehman, Tayyab},
+  author       = {Rehman, Tayyab and De Gasperis, Giovanni and Shmahell, Aly},
   title        = {{Priority-Gated Camera Integrity and Context-Aware Semantic Anomaly Detection}: research code},
   year         = {2026},
   url          = {https://github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-},
