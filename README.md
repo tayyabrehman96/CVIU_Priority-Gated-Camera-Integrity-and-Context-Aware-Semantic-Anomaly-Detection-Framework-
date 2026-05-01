@@ -78,13 +78,68 @@ flowchart TB
 
 ## Data availability
 
-Public benchmarks used for **protocol alignment** and **comparative positioning** (download from the providers; not redistributed here):
+Values below mirror **Table: method-datasets** and related prose in the CVIU manuscript (`cas-dc-template.tex`: *Datasets and Data Preparation*). Frame counts for public sets follow dataset documentation **except** UHCTD frames marked † from devkit documentation. **This GitHub repository does not host raw videos**—use the URLs to obtain data.
 
-| Dataset | URL | Reference |
-|---------|-----|-----------|
-| **UCF-Crime** | [crcv.ucf.edu/projects/real-world](https://www.crcv.ucf.edu/projects/real-world/) | Sultani et al., 2018 |
-| **ShanghaiTech Campus** | [svip-lab.github.io/dataset/campus_dataset.html](https://svip-lab.github.io/dataset/campus_dataset.html) | Georgescu et al., 2021 |
-| **UHCTD** (camera tampering + devkit) | [github.com/QuantitativeImagingLaboratory/ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit) | — |
+### Public benchmarks — parameters and protocol
+
+| Dataset | Key reference (cite in papers) | Type | Videos | Frames (≈) | Label structure | Annotation | Primary metric | Standard split |
+|--------|----------------------------------|------|--------|------------|-----------------|------------|----------------|----------------|
+| **UCF-Crime** | [Sultani et al., 2018](https://www.crcv.ucf.edu/projects/real-world/) — *Real-world anomaly detection in surveillance videos* (CVPR) | Public, weakly supervised | 1 900 untrimmed | ~13.8 M | 13 anomaly categories + normal | Video-level (weak) | Video-level AUC | 800 train / 140 test anomaly videos (paper standard) |
+| **ShanghaiTech Campus** | [Georgescu et al., 2021](https://svip-lab.github.io/dataset/campus_dataset.html) — *Anomaly Detection in Video via Self-Supervised and Multi-Task Learning* (CVPR) | Public, frame-level | 437 (330 train + 107 test) | ~317 K | 130 event types; binary normal/anomaly at frame level | Frame-level | Frame-level AUC | 330 train / 107 test |
+| **UHCTD** | University of Houston Camera Tampering Dataset + [ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit) | Public, camera-integrity | Sequence-based (count N/A in table) | ~120 K † | 4: blockage, covering, defocus, displacement | Frame-level | Frame-level F1 | Per-sequence hold-out (per devkit) |
+
+### Public benchmarks — capture settings and access
+
+| Dataset | Capture setting | Typical resolution | Typical FPS | Access |
+|--------|------------------|-------------------|-------------|--------|
+| **UCF-Crime** | Real-world CCTV, outdoor/indoor | Variable (240p–1080p) | 24–30 | [crcv.ucf.edu/projects/real-world](https://www.crcv.ucf.edu/projects/real-world/) |
+| **ShanghaiTech** | Campus surveillance, 13 scenes | 856×480 | 24 | [svip-lab.github.io/dataset/campus_dataset.html](https://svip-lab.github.io/dataset/campus_dataset.html) |
+| **UHCTD** | Controlled lab + outdoor | Variable | 25 | [github.com/QuantitativeImagingLaboratory/ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit) |
+
+**Roles in the manuscript:** UCF-Crime — semantic / video-level AUC alignment; ShanghaiTech — cross-scene frame-level AUC; UHCTD — **camera-integrity** validation (CI-focused). Public-benchmark numbers reported *for* “this work” in the paper are **protocol-aligned** with metrics derived from the **proprietary** held-out test pipeline where stated—not necessarily re-running the exact public server-side splits in this code drop.
+
+### Proprietary project corpus (paper only — not in this repo)
+
+These parameters are for **replication context** and trace to the manuscript; **raw files are not distributed** here.
+
+| Parameter | Value (manuscript) |
+|-----------|---------------------|
+| **Total frames** | 6 889 307 |
+| **Anomaly calibration** | `video*.avi` — 6 732 288 frames (~97.72 %) |
+| **Normal reference** | `Normal_Videos_*.mp4` — 145 954 frames (~2.12 %) |
+| **Held-out test** | `TEST_*.mp4` — **8** files, **10 800** frames (~0.16 %) |
+| **Classes (8)** | `camera_blocked`, `camera_covered`, `blur_frame`, `camera_moved`, `fire_detected`, `smoke_detected`, `weapon_detected`, `Benign` |
+| **Held-out frame counts** | `camera_blocked`, `blur_frame`, `camera_moved`, `fire_detected`, `smoke_detected`, `weapon_detected`: **864** each; `camera_covered`: **2 592** (3 material variants × 864); `Benign`: **3 024** |
+| **Annotation** | Frame-level; inter-annotator validation on stratified 10 % sample (*n* = 1 080); **macro Cohen’s κ = 0.91** (see paper Table: interrater) |
+| **Primary metrics (corpus)** | Frame-level accuracy, macro-F1, mAP<sub>frame</sub>, AUC-ROC |
+| **Train : test ratio (frames)** | ~638 : 1 calibration+normal vs held-out test |
+| **Source FPS** | 25 (reported) |
+| **Frame sampling in paper** | *n<sub>s</sub>* = 5 (every 5th frame processed) |
+| **YOLO input** | 640×640 letterbox internally (paper stack) |
+
+### Suggested bibliography entries (copy into your `.bib`)
+
+Matches keys used in `cas-dc-template.tex` / `cas-refs.bib`:
+
+```bibtex
+@article{sultani2018realworld,
+  author = {Sultani, Waqas and Chen, Chen and Shah, Mubarak},
+  title = {Real-World Anomaly Detection in Surveillance Videos},
+  journal = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  year = {2018},
+  pages = {6479--6488}
+}
+
+@article{georgescu2021anomaly,
+  author = {Georgescu, Mariana Iuliana and Barbalau, Antonio and Ionescu, Radu Tudor and Khan, Fahad Shahbaz and Popescu, Marius and Shah, Mubarak},
+  title = {Anomaly Detection in Video via Self-Supervised and Multi-Task Learning},
+  journal = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year = {2021},
+  pages = {12742--12752}
+}
+```
+
+For **UHCTD**, cite the dataset/devkit your venue requires (e.g. repository documentation for [ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit)) and any tampering baseline you compare against.
 
 ## Manuscript alignment (CVIU paper / `cas-dc-template.tex`)
 
