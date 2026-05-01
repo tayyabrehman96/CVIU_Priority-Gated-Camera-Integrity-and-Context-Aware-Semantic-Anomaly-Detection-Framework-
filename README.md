@@ -66,6 +66,8 @@ python hybrid_risk_simulation.py --mode hybrid --severity high --seed 37 --metad
 python run_experiment_matrix.py --sample-frames 5 --out-dir reports
 ```
 
+Matrix CSV and log outputs are written under `reports/` locally; that folder is **gitignored** except a `.gitkeep` so the path exists after clone.
+
 Use `--no-models` on `run_experiment_matrix.py` / `test_pipeline.py` if you want to skip YOLO loading.
 
 **6. Optional analysis / figures**
