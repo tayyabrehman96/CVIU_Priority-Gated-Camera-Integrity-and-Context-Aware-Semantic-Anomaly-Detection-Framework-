@@ -86,6 +86,45 @@ Public benchmarks used for **protocol alignment** and **comparative positioning*
 | **ShanghaiTech Campus** | [svip-lab.github.io/dataset/campus_dataset.html](https://svip-lab.github.io/dataset/campus_dataset.html) | Georgescu et al., 2021 |
 | **UHCTD** (camera tampering + devkit) | [github.com/QuantitativeImagingLaboratory/ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit) | — |
 
+## Manuscript alignment (CVIU paper / `cas-dc-template.tex`)
+
+The following matches the **Elsevier CAS double-column manuscript** (CVIU) titled *Priority Gated Camera Integrity and Context Aware Semantic Anomaly Detection…* local TeX: `cas-dc-template.tex` (not committed in Git; keep your author copy). It explains **what the paper claims as the full system**, **how data and benchmarks are used**, and **how this repository is a reduced derivative**—not a byte-for-byte replication of the deployment stack.
+
+### What the paper defines as the full framework
+
+- **Goal:** Surveillance anomaly detection that treats **camera-signal integrity first**: blockage, covering, blur, and displacement are resolved **before** fire, smoke, or weapon semantics, to stop corrupted feeds from driving false semantic alarms.
+- **Formal contributions (Section 1):**
+  1. **Priority-gated hierarchy** — unified eight-class label space; CI guards are **hard gates** ahead of semantic detectors.
+  2. **Slot-conditioned rolling scene model** — temporal context (EMA over scene statistics) **modulates** semantic confidence (e.g. illumination transitions) instead of relying only on fixed global thresholds.
+  3. **Deterministic decision traces** — rule-based, human-readable rationale per frame; the paper also evaluates an **optional** Qwen~2.5 / Groq **VLM** only on an **ambiguous-confidence band** (primary benchmark tables stay deterministic for latency and reproducibility).
+- **Ingestion modes (Section “Proposed Model” / “Methodology”):** The architecture is defined for two **operationally equivalent** streams — `public_dataset_stream` (evaluation) and `live_camera_stream` (deployment: **ONVIF/RTSP** live video). **All primary quantitative experiments in the paper are run in offline batch mode on pre-recorded files**; the text states batch and live share **identical decision logic and thresholds**, so batch results are meant to represent live behaviour.
+- **Processing stages (five):** frame ingestion and preprocessing → **camera-integrity guards** → **context-aware scene scoring** → **semantic anomaly detection** (HSV fire/smoke within motion masks, YOLO persons/vehicles/weapons) → **structured outputs** (label, confidence, rationale trace, metadata).
+- **Reported performance (abstract):** Includes frame-level accuracy, macro-F1, mAP, CPU latency (~38 ms per **processed** frame at stated sampling), inter-annotator agreement on the held-out set ($\kappa{=}0.91$), and **protocol-aligned** AUC-style positioning vs **ShanghaiTech** and **UHCTD** (and related public literature).
+
+### Datasets described in the paper
+
+| Role | Description (from manuscript) |
+|------|--------------------------------|
+| **Project corpus (proprietary)** | ~**6.89 M frames** total: anomaly **calibration** footage (`video*.avi`), **normal reference** (`Normal_Videos_*.mp4`), and a **held-out test** set (**eight** `TEST_*.mp4` files, **10 800** stratified frames). Calibration sets **thresholds**; the held-out set is **never** used during calibration. Primary tables (e.g. 98.0 % accuracy, 95.9 % macro-F1, mAP) come from this corpus. |
+| **UCF-Crime** | Weakly supervised, video-level protocol; used for **semantic** benchmark **alignment** / SOTA comparison. |
+| **ShanghaiTech Campus** | Frame-level AUC protocol; **cross-scene** generalisation positioning. |
+| **UHCTD** | Camera-tampering / **integrity** focused; validates CI-oriented behaviour. |
+
+**Important nuance in the paper:** benchmark comparison rows that cite public datasets are **protocol-aligned** using metrics computed from the **proprietary held-out** pipeline; the manuscript states that **cross-dataset numerical comparison is indicative** because populations differ, and the full pipeline is **not** necessarily executed on the public splits inside that text’s framing.
+
+### What was removed or narrowed for **this GitHub** release (live, dataset, framework)
+
+| Layer | In the manuscript | In this repository |
+|--------|-------------------|---------------------|
+| **Live video path** | ONVIF/RTSP `live_camera_stream`, continuous operation, edge-style deployment | **Not included** — no RTSP/ONVIF client, no live capture loop, no Redis/NVR integration. |
+| **Full perception stack** | Five-stage pipeline with **rolling scene / context adaptation**, template slots, debouncing, full engine orchestration | **Reduced to** [`core/guards.py`](core/guards.py) + [`test_pipeline.py`](test_pipeline.py) **frame classifier** (guard-first CV + optional YOLO). Slot-EMA context scoring, calibration passes, and template managers from the paper **are not** in this tree as shipped. |
+| **VLM** | Optional Qwen~2.5 / Groq on ambiguous scores; extra accuracy at latency cost | **Not included** — no API client; deterministic-only behaviour in code. |
+| **Proprietary corpus** | ~6.89 M frames + strict calibration/test protocol | **Not distributed** — you provide **your own** `videos/` (or synthetic `TEST_*` via [`generate_test_videos.py`](generate_test_videos.py)). **You cannot reproduce the paper’s exact 98 % / 95.9 % numbers from this clone alone** without their data and full implementation. |
+| **GUI / services** | Demo/offline analyser (removed earlier in release history) | Still **absent** — batch scripts only. |
+| **Extra research tooling** | — | [`hybrid_risk_simulation.py`](hybrid_risk_simulation.py) and the experiment **matrix** are **additional** reproducibility helpers for risk modes and CSV aggregation; they are not a separate section title in the paper but align with ablation / scenario thinking. |
+
+**Bottom line:** the manuscript describes a **deployable, full pipeline** (batch-equivalent to live). This repo publishes a **dataset-agnostic, dependency-light slice**: integrity-heavy CV, optional YOLO, scenario packaging, and benchmark CSVs—appropriate for **partial replication**, **ablations**, and **transparent methodology**, while **live ingest**, **full context adaptation**, **VLM**, and **proprietary footage** stay outside the Git tree by design.
+
 ## Data: how to obtain inputs
 
 Large media files are **not** committed (see [`.gitignore`](.gitignore)).
@@ -106,7 +145,7 @@ Place normalized or generated clips in [`videos/`](videos/README.md) before runn
 
 ## Technical deep dive: pipeline, scope, and reducing steps
 
-This section is for reviewers, integrators, and authors who need **precision**. The simple workflow above deliberately hides most of it.
+This section is for reviewers, integrators, and authors who need **precision**. For terminology tied to the **CVIU manuscript** (contributions, `public_dataset_stream` / `live_camera_stream`, proprietary frame counts, benchmark roles), see **Manuscript alignment** above.
 
 ### Full framework vs this repository
 
