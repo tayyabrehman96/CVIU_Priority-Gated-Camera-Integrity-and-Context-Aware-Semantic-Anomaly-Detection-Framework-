@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "description": "Hybrid risk simulation protocol for reproducible benchmark generation.",
+  "datasets": [
+    {
+      "id": "ucsd_ped2",
+      "role": "normal_baseline",
+      "notes": "Provides normal surveillance behavior and stable background statistics."
+    },
+    {
+      "id": "avenue",
+      "role": "public_risk_events",
+      "notes": "Used as dataset-native risk source for unusual motion and interaction patterns."
+    },
+    {
+      "id": "shanghaitech",
+      "role": "mixed_conditions",
+      "notes": "Used for mixed-context stress scenarios and cross-scene diversity."
+    }
+  ],
+  "risk_taxonomy": {
+    "camera_integrity": [
+      "camera_blocked",
+      "camera_covered",
+      "blur_frame",
+      "camera_moved"
+    ],
+    "scene_event": [
+      "fire_detected",
+      "smoke_detected",
+      "weapon_detected",
+      "theft_suspect"
+    ],
+    "benign": [
+      "Benign"
+    ]
+  },
+  "temporal_schedule_seconds": {
+    "normal_start": [0.0, 6.0],
+    "anomaly_1": [6.0, 14.0],
+    "normal_mid": [14.0, 20.0],
+    "anomaly_2": [20.0, 32.0],
+    "normal_end": [32.0, 45.0]
+  },
+  "severity_levels": {
+    "low": {
+      "intensity_scale": 0.45,
+      "event_frequency_scale": 0.75,
+      "duration_jitter_seconds": 1.0
+    },
+    "medium": {
+      "intensity_scale": 0.70,
+      "event_frequency_scale": 1.0,
+      "duration_jitter_seconds": 2.0
+    },
+    "high": {
+      "intensity_scale": 1.0,
+      "event_frequency_scale": 1.3,
+      "duration_jitter_seconds": 3.0
+    }
+  },
+  "constraints": {
+    "max_overlapping_risks": 2,
+    "allow_cross_category_overlap": true,
+    "min_normal_gap_seconds": 2.0
+  },
+  "reproducibility": {
+    "seed_list": [13, 23, 37],
+    "split_policy": "fixed_manifest",
+    "manifest_format": "json",
+    "sampling_policy": "every_5th_frame"
+  },
+  "evaluation_targets": {
+    "model_performance": ["accuracy", "precision", "recall", "f1"],
+    "risk_generation_quality": [
+      "scenario_coverage",
+      "severity_balance",
+      "temporal_stability",
+      "failure_case_rate"
+    ]
+  }
+}
