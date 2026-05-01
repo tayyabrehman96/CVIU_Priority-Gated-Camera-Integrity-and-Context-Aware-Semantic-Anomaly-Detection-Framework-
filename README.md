@@ -17,6 +17,63 @@ The framework combines **priority-gated** hard guards (camera health, occlusion,
 2. **Experiment matrix** ([`run_experiment_matrix.py`](run_experiment_matrix.py)) runs the simulation grid (modes × severities × seeds), invokes `test_pipeline.run_benchmark` on each pack, and writes timestamped CSV summaries under `reports/`. [`aggregate_experiment_matrix.py`](aggregate_experiment_matrix.py) aggregates multiple runs; [`run_experiment_cell.py`](run_experiment_cell.py) runs a single cell.
 3. **Detection stack in this repo** Minimal [`core/guards.py`](core/guards.py) implements CV-based fire/smoke, occlusion/cover, blur/block heuristics, and related helpers; tunables load from a local **`config.py`** you create by copying [`config.example.py`](config.example.py). Optional **Ultralytics YOLOv8** paths are used inside [`test_pipeline.py`](test_pipeline.py) for full-model evaluation.
 
+## Methodology diagram
+
+Pipeline: **inputs** → **preprocessing** → **context adaptation** → **parallel detectors** → **fusion and arbitration** → **per-frame outputs** → **evaluation** (compare predictions to ground truth). The schematic below matches the manuscript overview (camera integrity, fire or smoke, YOLO auxiliary, weapon branch, conditional VLM, priority fusion, debouncing, metrics).
+
+![Methodology diagram](docs/methodology_diagram.png)
+
+*Overview figure for the repository README. Replace [`docs/methodology_diagram.png`](docs/methodology_diagram.png) with your manuscript artwork if you need a pixel-identical match.*
+
+```mermaid
+flowchart TB
+  subgraph inputs [Inputs]
+    Xt["Raw video X_t"]
+    Yt["Ground truth y_t"]
+  end
+  subgraph pre [Preprocessing]
+    dec[Frame decoding]
+    calib[Camera calibration and readiness]
+    qg[Quality gates and transition suppression]
+  end
+  subgraph ctx [Context adaptation]
+    cvec[Context vector for scene and risk]
+  end
+  subgraph det [Parallel detectors]
+    d1[Camera integrity CV]
+    d2[Fire and smoke CV]
+    d3[YOLOv8 person and vehicle]
+    d4[Weapon YOLO with temporal confirm]
+    d5[VLM when context thresholds allow]
+  end
+  subgraph fus [Fusion]
+    pri[Priority arbitration then optional debouncing]
+  end
+  subgraph out [Outputs]
+    yhat["Predicted label per frame"]
+    exp[Decision trace and metadata]
+  end
+  subgraph eval [Evaluation]
+    mets[Accuracy P R F1 macro-F1 optional AUC mAP]
+  end
+  Xt --> dec --> calib --> qg --> cvec
+  cvec --> d1 & d2 & d3 & d4 & d5
+  d1 & d2 & d3 & d4 & d5 --> pri
+  pri --> yhat & exp
+  yhat --> mets
+  Yt --> mets
+```
+
+## Data availability
+
+Public benchmarks used for **protocol alignment** and **comparative positioning** (download from the providers; not redistributed here):
+
+| Dataset | URL | Reference |
+|---------|-----|-----------|
+| **UCF-Crime** | [crcv.ucf.edu/projects/real-world](https://www.crcv.ucf.edu/projects/real-world/) | Sultani et al., 2018 |
+| **ShanghaiTech Campus** | [svip-lab.github.io/dataset/campus_dataset.html](https://svip-lab.github.io/dataset/campus_dataset.html) | Georgescu et al., 2021 |
+| **UHCTD** (camera tampering + devkit) | [github.com/QuantitativeImagingLaboratory/ctd-devkit](https://github.com/QuantitativeImagingLaboratory/ctd-devkit) | — |
+
 ## Data: how to obtain inputs
 
 Large media files are **not** committed (see [`.gitignore`](.gitignore)).
@@ -98,6 +155,7 @@ python generate_methodology_diagram.py
 ├── generate_*.py                  # Test videos & publication figures
 ├── dataset_preparation.ipynb
 ├── download_test_videos.ipynb
+├── docs/                          # methodology_diagram.png + docs/README.md
 ├── Images/                        # Placeholder only — PNGs gitignored; run generate_*.py or add files locally
 ├── reports/                       # *.csv experiment outputs (tracked)
 ├── models/README.md
