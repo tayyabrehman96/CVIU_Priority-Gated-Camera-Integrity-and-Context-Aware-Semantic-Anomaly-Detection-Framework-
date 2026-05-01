@@ -4,6 +4,18 @@ Research code release for **hybrid risk simulation**, **frame-level anomaly benc
 
 **Public repository:** [github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-](https://github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-)
 
+## At a glance (simple workflow)
+
+For readers who only need a **minimal story**—not every package and knob—the path is:
+
+1. **Get the code** and install Python dependencies (details are in **Reproduction** only if you actually run experiments).
+2. **Add video clips** you are allowed to use into `videos/` (or generate synthetic test clips with one script).
+3. **Build a scenario folder** that lists which clip is which event type (one command).
+4. **Score how well the detectors match those labels** (another command). Results land in `reports/` as tables you can open in Excel or similar.
+5. Compare against **public benchmarks** (see **Data availability**) when you position results in a paper—not inside this repo.
+
+Anything about torch, YOLO weights, `config.py`, or “metadata-only” is **optional complexity**; see **Technical deep dive** for what each choice removes or keeps.
+
 ## Contribution (summary)
 
 The framework combines **priority-gated** hard guards (camera health, occlusion, blur) with **context-aware** semantic cues (object-centric models and schedule-driven risk). This codebase focuses on:
@@ -91,6 +103,51 @@ Place normalized or generated clips in [`videos/`](videos/README.md) before runn
 
 - **YOLOv8 (general):** download with Ultralytics (see [`models/README.md`](models/README.md)); default checkpoint name `yolov8s.pt` at repo root.
 - **Weapon-specialized YOLO:** optional; path from `WEAPON_MODEL_PATH` in your local `config.py` (see [`config.example.py`](config.example.py)). Omit weights or pass `--no-models` where supported for faster, guard-heavy runs.
+
+## Technical deep dive: pipeline, scope, and reducing steps
+
+This section is for reviewers, integrators, and authors who need **precision**. The simple workflow above deliberately hides most of it.
+
+### Full framework vs this repository
+
+The **manuscript-level** system is a multi-stage pipeline: decoding, quality gates, **context adaptation** (a control signal over scene risk), **parallel detectors** (classical camera-integrity CV, fire or smoke heuristics, general YOLO, weapon-specific YOLO, optionally a **VLM** when gating thresholds fire), then **priority fusion**, optional **temporal debouncing**, and finally **evaluation** against frame or clip labels.
+
+**This GitHub snapshot is intentionally reduced.** It does **not** ship the live GUI, the NVR or ONVIF ingest, Redis or export daemons, or the VLM cloud or Ollama client. What remains is the part needed to **rebuild scenario packs**, run **deterministic benchmarks**, and inspect **CSV metrics**. That is a deliberate scope cut: fewer moving parts, reproducible numbers, no API keys in the default path.
+
+### Data and control flow (what actually runs)
+
+1. **`hybrid_risk_simulation.py`** reads [`risk_simulation_protocol.json`](risk_simulation_protocol.json) (severity scales, time windows in seconds). Depending on `--mode` (`dataset_only`, `synthetic_only`, `hybrid`), it either reuses existing `TEST_*.mp4` naming conventions, synthesizes stressed variants from “normal” base files, or mixes both. Output is a directory under `simulations/` (gitignored) containing `manifest.json` and a `videos/` subdirectory whose filenames and expected labels the benchmark understands.
+
+2. **`--metadata-only`** does **not** re-encode the world: it **copies** existing labeled clips into the pack. That cuts **heavy I/O and CPU or GPU** use for building packs, at the cost of not stress-testing compression or injection code paths.
+
+3. **`test_pipeline.py`** decodes each clip, walks frames with a stride (`--sample-frames` or matrix default), and for each frame calls **`classify_frame`**, which implements a **fixed arbitration order**: hard guards first (block, cover, occlusion, blur), then classical fire or smoke CV, then—if models are loaded—YOLO for generic objects and weapon logic, then theft or suspect heuristics tied to person plus weapon overlap, else benign. Ground truth comes from the manifest schedule and filename-to-label maps inside the script. Metrics aggregate confusion-style counts into accuracy, macro-F1, and auxiliary “risk quality” scalars used by the matrix scripts.
+
+4. **`run_experiment_matrix.py`** is a **Cartesian driver**: modes × severities × seeds, each time spawning simulation then benchmark. **`run_experiment_cell.py`** is the same for one tuple. **`aggregate_experiment_matrix.py`** rolls multiple CSVs forward with bootstrap CIs where implemented.
+
+Nothing in the remaining code calls a language model; any “VLM” or “Regolo” behavior in the paper is **out of scope** for this tree unless you merge your own service layer back in.
+
+### How to reduce steps (and what you lose)
+
+| Reduction | What you skip | Trade-off |
+|-----------|----------------|-----------|
+| **`--metadata-only`** on simulation | Pixel-level synthetic risk injection | Faster, disk-friendly; you still need real `TEST_*.mp4` files present. |
+| **`--no-models`** on benchmark or matrix | YOLO general and weapon weights | **Weapon**, **theft suspect**, and many **person or vehicle**-driven cues drop to absent or degraded; integrity and fire or smoke CV still run. Macro-F1 across all labels may look worse or collapse for weapon-heavy ground truth. |
+| **Larger `--sample-frames` (fewer frames)** | Compute | Coarser time resolution; rare events may be missed; metrics are still “valid” but noisier. |
+| **Single `run_experiment_cell.py`** instead of full matrix | Full grid | One scenario only; no cross-seed variance picture. |
+| **No `config.py` copy** | Broken import | **Required** for any run: `config.example.py` → `config.py` is the one step you cannot skip in code terms. |
+| **Omit public benchmark downloads** | External alignment | Fine for internal ablations; weak for claims that cite UCF-Crime, ShanghaiTech, or UHCTD without actually running those protocols elsewhere. |
+
+### What is “technically required” vs optional (for this repo)
+
+**Hard requirements to execute code paths:** Python 3.10+, OpenCV, NumPy, a **`config.py`** derived from the example, and video inputs consistent with manifest expectations.
+
+**Soft requirements for *full* parity with the paper’s detector mix:** PyTorch + Ultralytics, `yolov8s.pt`, and optionally a custom weapon checkpoint under `models/`. Without them you are running a **guard-heavy subset**, which is still publishable for ablations if you state it clearly.
+
+**Not required here:** GPU (CPU torch is fine for small clips), remote APIs, Redis, LaTeX, or the methodology PNG source.
+
+### Where thresholds live
+
+Operational constants (HSV fire bands, blur heuristics, weapon area fractions, YOLO confidence floors) are centralized in **`config.py`** so `core/guards.py` and `test_pipeline.py` stay synchronized. Changing behavior without editing code means editing those values or env overrides that `config.example.py` documents.
 
 ## Reproduction
 
