@@ -1,8 +1,50 @@
 # Priority-Gated Camera Integrity and Context-Aware Semantic Anomaly Detection
 
-Research code release for **hybrid risk simulation**, **frame-level anomaly benchmarks**, and evaluation utilities accompanying work submitted to *Computer Vision and Image Understanding* (CVIU). This repository is a **slim, reproducibility-focused** snapshot: the full offline demo GUI, VLM service layer, and live-engine orchestration are **not** included here.
+Research code release for **hybrid risk simulation**, **frame-level anomaly benchmarks**, and evaluation utilities accompanying work submitted to *Computer Vision and Image Understanding* (CVIU). This snapshot omits live ingest, the **VLM (Qwen~2.5 / Groq)** service path, and the full context engine—see **What the full system does in practice**, **Vision-language model (VLM)**, and **How this GitHub repository maps** at the top of this README.
 
 **Public repository:** [github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-](https://github.com/tayyabrehman96/CVIU_Priority-Gated-Camera-Integrity-and-Context-Aware-Semantic-Anomaly-Detection-Framework-)
+
+## What the full system does in practice (industry / deployment)
+
+In the **intended real-world** design (CVIU manuscript), the pipeline processes surveillance video so that **camera health is validated before any “what is happening in the scene?” interpretation**. Concretely:
+
+1. **Ingest** pre-recorded batches or **live** streams (e.g. **ONVIF/RTSP**), with the **same decision logic** in both modes.
+2. Run **camera-integrity guards** (blocked lens, cover, blur, displacement) so corrupted feeds do not drive fire, smoke, or weapon decisions.
+3. Apply **context-aware scene scoring** (rolling statistics) to dampen routine illumination or background motion spikes.
+4. Run **semantic detectors**—classical CV for fire/smoke, **YOLO** for people, vehicles, and weapon cues—and **fuse** outputs under a **fixed priority order**.
+5. Emit a **per-frame label**, confidence, and a **deterministic, human-readable rationale trace** for audit (not a black-box explanation).
+
+That path is meant for **operator consoles, SOC workflows, and edge-style CPU deployment** (the paper reports ~38 ms per *processed* frame at a fixed sampling stride on CPU for the deterministic core).
+
+## Vision-language model (VLM) — what it does and when
+
+The manuscript adds an **optional** layer—**Qwen~2.5** (vision–language), called via the **Groq** inference API—not as a replacement for the pipeline, but as **selective verification**:
+
+| Aspect | Manuscript behaviour |
+|--------|----------------------|
+| **Purpose** | Resolve **ambiguous semantic** decisions where CV+YOLO scores sit between “confident enough to act” and “clearly skip,” i.e. $\tau_{\text{activate}} \leq \tilde{s}_t^{(k)} < \tau_{\text{vlm\_skip}}$. |
+| **Never does** | **Override camera-integrity** outcomes. Frames that fail integrity guards are **not** sent to the VLM. |
+| **Input** | Single frame (RGB path), structured prompt with the **eight** target labels, guard-pass status, and current semantic score context. |
+| **Output** | Parsed anomaly **class** plus a **natural-language rationale** string (useful for audit and post-incident review). |
+| **Scale in paper** | On the 10 800-frame held-out test set, **743 frames** (~**6.9 %)** fell in the ambiguous band and were VLM-eligible. |
+| **Latency** | Roughly **312 ms ± 84 ms per query** (API round-trip reported in the paper)—fine for **offline / escalation**, not for classifying **every** frame at the edge. |
+| **Findings (summary)** | On ambiguous frames, VLM beat the **deterministic template** by ~**4.1** percentage points accuracy (paper notes this is **marginally** significant and should be replicated); a **selective** VLM hybrid gave a small **system-level** uplift; **VLM-on-every-frame** hurt accuracy vs the full guard-first design (no CI gating inside the VLM) and broke the real-time budget. |
+
+**Operational takeaway from the paper:** keep **deterministic + guard-first** as the default for **live** streams; treat the VLM as an **escalation / audit** tool when budget and connectivity allow.
+
+## How this GitHub repository maps to that story (research replication)
+
+This repo is a **slim reproducibility slice**, not a turnkey copy of the full industrial stack:
+
+| Full system (paper) | In **this** repository |
+|---------------------|-------------------------|
+| Live ONVIF/RTSP + batch files | **Batch / file-based** tooling only (`videos/`, `hybrid_risk_simulation.py`, `test_pipeline.py`). No RTSP/ONVIF client. |
+| Full five-stage engine (guards + **rolling context** + semantic + fusion + traces) | **Guards + optional YOLO** inside `test_pipeline.py`; **no** rolling-scene / template / VLM service code in-tree. |
+| **Qwen~2.5 / Groq VLM** optional path | **Not included**. Primary paper tables use the **deterministic** path; reproducing VLM numbers requires wiring your own API client per the manuscript. |
+| Proprietary ~6.9 M-frame corpus | **Not shipped**. You supply **your own** clips or synthetic `TEST_*` video. |
+| Hybrid risk **matrix** + CSV reports | **Included** for ablations and scenario packaging (`run_experiment_matrix.py`, `reports/*.csv`). |
+
+**Bottom line:** clone this repo to **repeat transparent benchmark and risk-simulation experiments** on **your** data with the **deterministic CV+YOLO** stack; treat the manuscript as the authoritative description of **live deployment**, **VLM routing**, and **full context adaptation**. Reintegrate VLM and live ingest separately if you need parity with every evaluation in the paper.
 
 ## At a glance (simple workflow)
 
