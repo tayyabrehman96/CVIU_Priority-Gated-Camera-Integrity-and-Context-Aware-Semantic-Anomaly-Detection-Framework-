@@ -1,3 +1,8 @@
+# Manuscript sources (keep locally; not committed)
+cas-dc-template.tex
+cas-refs.bib
+template.tex
+
 # Environment and tooling
 .env
 # Local overrides (copy from config.example.py); not committed

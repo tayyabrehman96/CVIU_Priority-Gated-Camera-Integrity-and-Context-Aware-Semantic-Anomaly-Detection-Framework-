@@ -98,7 +98,6 @@ python generate_methodology_diagram.py
 ├── generate_*.py                  # Test videos & publication figures
 ├── dataset_preparation.ipynb
 ├── download_test_videos.ipynb
-├── cas-dc-template.tex / cas-refs.bib  # Manuscript sources (expects figures locally; see Images/README.md)
 ├── Images/                        # Placeholder only — PNGs gitignored; run generate_*.py or add files locally
 ├── reports/                       # *.csv experiment outputs (tracked)
 ├── models/README.md
@@ -121,7 +120,7 @@ If you use this code, please cite the **CVIU manuscript** once it is available, 
 }
 ```
 
-Related survey and VAD references appear in [`cas-refs.bib`](cas-refs.bib) (for example `barbalau2023ssmtl` for *Computer Vision and Image Understanding*).
+Related survey and VAD literature for related work is cited in the CVIU manuscript (bib entries were maintained in a local `cas-refs.bib` — not distributed with this repository).
 
 ## License
 
