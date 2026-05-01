@@ -15,7 +15,7 @@ The framework combines **priority-gated** hard guards (camera health, occlusion,
 
 1. **Hybrid risk simulation** ([`hybrid_risk_simulation.py`](hybrid_risk_simulation.py)) builds a run directory with a `manifest.json` and a `videos/` subfolder. Modes include `dataset_only`, `synthetic_only`, and `hybrid`. Severity (`low` / `high`) and RNG `seed` are controlled from the CLI; temporal structure and scales come from the protocol JSON.
 2. **Experiment matrix** ([`run_experiment_matrix.py`](run_experiment_matrix.py)) runs the simulation grid (modes × severities × seeds), invokes `test_pipeline.run_benchmark` on each pack, and writes timestamped CSV summaries under `reports/`. [`aggregate_experiment_matrix.py`](aggregate_experiment_matrix.py) aggregates multiple runs; [`run_experiment_cell.py`](run_experiment_cell.py) runs a single cell.
-3. **Detection stack in this repo** Minimal [`core/guards.py`](core/guards.py) implements CV-based fire/smoke, occlusion/cover, blur/block heuristics, and related helpers; configuration constants live in [`config.py`](config.py). Optional **Ultralytics YOLOv8** paths are used inside [`test_pipeline.py`](test_pipeline.py) for full-model evaluation.
+3. **Detection stack in this repo** Minimal [`core/guards.py`](core/guards.py) implements CV-based fire/smoke, occlusion/cover, blur/block heuristics, and related helpers; tunables load from a local **`config.py`** you create by copying [`config.example.py`](config.example.py). Optional **Ultralytics YOLOv8** paths are used inside [`test_pipeline.py`](test_pipeline.py) for full-model evaluation.
 
 ## Data: how to obtain inputs
 
@@ -33,7 +33,7 @@ Place normalized or generated clips in [`videos/`](videos/README.md) before runn
 ## Models
 
 - **YOLOv8 (general):** download with Ultralytics (see [`models/README.md`](models/README.md)); default checkpoint name `yolov8s.pt` at repo root.
-- **Weapon-specialized YOLO:** optional; path from `WEAPON_MODEL_PATH` in [`config.py`](config.py). Omit weights or pass `--no-models` where supported for faster, guard-heavy runs.
+- **Weapon-specialized YOLO:** optional; path from `WEAPON_MODEL_PATH` in your local `config.py` (see [`config.example.py`](config.example.py)). Omit weights or pass `--no-models` where supported for faster, guard-heavy runs.
 
 ## Reproduction
 
@@ -45,6 +45,10 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 # Linux/macOS:
 # source .venv/bin/activate
+
+# Create local config (required once per clone)
+# Windows PowerShell: Copy-Item config.example.py config.py
+# bash: cp config.example.py config.py
 
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
@@ -81,7 +85,7 @@ python generate_methodology_diagram.py
 ## Repository layout
 
 ```
-├── config.py                      # Thresholds and model paths
+├── config.example.py              # Template → copy to config.py (gitignored)
 ├── core/
 │   └── guards.py                  # CV guards & fire/smoke heuristics (minimal core)
 ├── hybrid_risk_simulation.py      # Scenario pack builder

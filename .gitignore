@@ -1,5 +1,7 @@
 # Environment and tooling
 .env
+# Local overrides (copy from config.example.py); not committed
+config.py
 .venv/
 venv/
 __pycache__/

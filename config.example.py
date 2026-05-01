@@ -1,3 +1,7 @@
+# config.example.py — copy to `config.py` before running (local `config.py` is not committed).
+#   Windows PowerShell: Copy-Item config.example.py config.py
+#   bash: cp config.example.py config.py
+#
 import os
 from dotenv import load_dotenv
 
